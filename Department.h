@@ -38,9 +38,12 @@ public:
     float getOvertimeRate() const;
 
     // Methods
+    void displayHeader() const;
     void display() const;
+    float getValidatedRate(const std::string& prompt);
     Department createDepartment(int deptCode);
 	bool checkFileAccess(std::ios& file);
+    void writeRecord(std::ofstream& deptFile, std::ofstream& ratesFile, const Department& dept);
     void addRecord(const Department& dept);
     void updateRecord(int updateCode);
     void viewRecord(int searchCode);

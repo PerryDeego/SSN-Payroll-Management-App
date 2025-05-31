@@ -1,495 +1,423 @@
 #include "Employee.h"
-#include "EmpList.h"
-#include <iostream> 					                                  
-#include <string> 
+#include <iostream>
+#include <iomanip>
+#include <limits>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
-//destructor
-Employee::~Employee()
-{
+// Constants for file names
+const string EMP_FILE_NAME = "employee.txt";
+const string TEMP_EMP_FILE_NAME = "tempemp.txt";
+const string EMP_PAYROLL_FILE_NAME = "employee_payroll.txt";
+const string TEMP_EMP_PAYROLL_FILE_NAME = "temp_emp_payroll.txt";
 
+// Destructor
+Employee::~Employee() {}
+
+// Default constructor
+Employee::Employee() 
+    : id(0), firstName("first name"), lastName("last name"), 
+      departmentCode(0), position("position"), hoursWorked(0.0f) {}
+
+// Primary constructor
+Employee::Employee(int id, const string& firstName, const string& lastName, 
+                   int departmentCode, const string& position, float hoursWorked)
+    : id(id), firstName(firstName), lastName(lastName), 
+      departmentCode(departmentCode), position(position), hoursWorked(hoursWorked) {}
+
+// Copy constructor
+Employee::Employee(const Employee &Emp) 
+    : id(Emp.id), firstName(Emp.firstName), lastName(Emp.lastName), 
+      departmentCode(Emp.departmentCode), position(Emp.position), hoursWorked(Emp.hoursWorked) {}
+
+// Mutators
+void Employee::setId(int empId) { id = empId; }
+void Employee::setFirstName(const string& fn) { firstName = fn; }
+void Employee::setLastName(const string& ln) { lastName = ln; }
+void Employee::setDepartmentCode(int deptCode) { departmentCode = deptCode; }
+void Employee::setPosition(const string& post) { position = post; }
+void Employee::setHoursWorked(float hr) { hoursWorked = hr; }
+
+// Accessors
+int Employee::getId() const { return id; }
+string Employee::getFirstName() const { return firstName; }
+string Employee::getLastName() const { return lastName; }
+int Employee::getDepartmentCode() const { return departmentCode; }
+string Employee::getPosition() const { return position; }
+float Employee::getHoursWorked() const { return hoursWorked; }
+
+// Display method
+void Employee::display() const {
+    cout << setfill('=') << setw(115) << "=" << setfill(' ') << endl;
+    cout << "| " << left << setw(10) << "ID"
+         << "| " << left << setw(20) << "FIRST NAME"
+         << "| " << left << setw(20) << "LAST NAME"
+         << "| " << left << setw(15) << "DEPT CODE"
+         << "| " << left << setw(20) << "POSITION"
+         << "| " << right << setw(10) << "HOURS"
+         << "\t |" << endl;
+    cout << setfill('-') << setw(115) << "-" << setfill(' ') << endl;
+    cout << "| " << left << setw(10) << getId()
+         << "| " << left << setw(20) << getFirstName()
+         << "| " << left << setw(20) << getLastName()
+         << "| " << left << setw(15) << getDepartmentCode()
+         << "| " << left << setw(20) << getPosition()
+         << "| " << right << setw(10) << fixed << setprecision(2) << getHoursWorked()
+         << "\t |" << endl;
+    cout << setfill('=') << setw(115) << "=" << setfill(' ') << endl;
 }
 
-//default constructor
-Employee::Employee()
-{
-	setId(0);
-	setFirstName("fist name");
-	setLastName("last name");
-	setDepartmentCode(0);
-	setPosition("position");
-	setHoursWorked(0.0f);
+// Utility function to get validated input for string
+string Employee::getValidatedString(const string& prompt) {
+    string input;
+    cout << prompt;
+    if (cin.peek() == '\n') cin.ignore(); // Clear leftover newline if present
+    getline(cin, input);
+    
+    while (input.empty()) {
+        cout << "Input cannot be empty. Please enter again: ";
+        getline(cin, input);
+    }
+    return input;
 }
 
-
-//primary constructor
-Employee::Employee(int id, string fistName, string lastName, int departmentCode, string position, float hoursWorked)
-{
-	setId(id);
-	setFirstName(fistName);
-	setLastName(lastName);
-	setDepartmentCode(departmentCode);
-	setPosition(position);
-	setHoursWorked(hoursWorked);
+// Utility function to get validated input for integer
+int Employee::getValidatedInt(const string& prompt) {
+    int value;
+    cout << prompt;
+    while (!(cin >> value)) {
+        cout << "Invalid input. Please enter a numeric value: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the newline character
+    return value;
 }
 
-//copy constructor
-Employee::Employee(const Employee &Emp)
-{
-	this->id = Emp.getId();
-	this->firstName = Emp.getFirstName();
-	this->lastName = Emp.getLastName();
-	this->departmentCode = Emp.getDepartmentCode();
-	this->position = Emp.getPosition();
-	this->hoursWorked = Emp.getHoursWorked();
+// Utility function to get validated input for float
+float Employee::getValidatedFloat(const string& prompt) {
+    float value;
+    
+    cout << prompt;
+    while (!(cin >> value) || value < 0) {
+        cout << "Invalid input. Please enter a non-negative numeric value: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the newline character
+    return value;
 }
 
-//mutators
-void Employee::setId(int empId)
-{
-	id = empId;
+// Create employee with input validation
+Employee Employee::createEmployee(int empId) {
+    string firstName = getValidatedString("➡️\t Enter Employee first name: ");
+    cout << endl;
+    string lastName = getValidatedString("➡️\t Enter Employee last name: ");
+    cout << endl;
+    int departmentCode = getValidatedInt("➡️\t Enter Employee department code: ");
+    cout << endl;
+    string position = getValidatedString("➡️\t Enter Employee position: ");
+    cout << endl;
+    float hoursWorked = getValidatedFloat("➡️\t Enter Employee hours worked: ");
+    cout << endl;
+
+    return Employee(empId, firstName, lastName, departmentCode, position, hoursWorked);
 }
 
-void Employee::setFirstName(string fn)
-{
-	firstName = fn;
-}
-
-void Employee::setLastName(string ln)
-{
-	lastName = ln;
-}
-void Employee::setDepartmentCode(int deptCode)
-{
-	departmentCode = deptCode;
-}
-
-void Employee::setPosition(string post)
-{
-	position = post;
-}
-void Employee::setHoursWorked(float hr)
-{
-	hoursWorked = hr;
-}
-
-//--------------- accessors -------------------//
-int Employee::getId() const
-{
-	return id;
-}
-
-string Employee::getFirstName() const
-{
-	return firstName;
-}
-
-string Employee::getLastName() const
-{
-	return lastName;
-}
-
-int Employee::getDepartmentCode() const
-{
-	return departmentCode;
-}
-
-string Employee::getPosition() const
-{
-	return position;
-}
-float Employee::getHoursWorked() const
-{
-	return hoursWorked;
-}
-
-//---- to string method ----//
-void Employee::display() const
-{
-	cout << "Employee Id: " << getId() << " | " << "First Name : " << getFirstName() << " | " << "Last Name : " << getLastName()
-		<< " | " << "Department Code : " << getDepartmentCode() << " | " << "Position : " << getPosition() << " | " << "Hours Worked : " << getHoursWorked() << endl;
-
-}
-
-
-//------------------------------------ methods ---------------------------------//
-Employee Employee::createEmployee(int empId)
-{
-	string firstName, lastName, position;
-	int departmentCode;
-	float hoursWorked;
-	
-
-
-	cout << "Enter Employee first name : ";
-	cin >> firstName;
-	cout << endl;
-
-	cout << "Enter Employee last name : ";
-	cin >> lastName;
-	cout << endl;
-
-	cout << "Enter Employee department code : ";
-	cin >> departmentCode;
-	cout << endl;
-
-	cout << "Enter Employee position : ";
-	cin.ignore();
-	getline(cin, position);
-	cout << endl;
-
-	cout << "Enter Employee hours worked : ";
-	cin >> hoursWorked;
-
-	Employee emp(empId, firstName, lastName, departmentCode, position, hoursWorked);
-
-	return emp;
-
+// Utility function to check file access
+bool Employee::checkFileAccess(ios& file) {
+    if (file.fail()) {
+        throw runtime_error("[❌ ERROR ACCESSING FILE! ]");
+    }
+    return true; // Return true if no error
 }
 
 
-//------------------------------------ file methods ---------------------------------//
-void Employee::addRecord(Employee emp)
-{
-	string empFileName = "employee.txt";
-	string empPayrollFileName = "employeepayroll.txt";
+// Helper function to write a department record to files
+void Employee::writeRecord(ofstream& empFile, ofstream& empPayrollFile, const Employee& emp) {
+    empFile << emp.getId() << "\t" << emp.getFirstName() << "\t" << emp.getLastName() << "\t"
+            << emp.getDepartmentCode() << "\t" << emp.getPosition() << endl;
+    empPayrollFile << emp.getId() << "\t" << emp.getDepartmentCode() << "\t" << emp.getHoursWorked() << endl;
+}
 
-	try {
-		// First, check if the employee ID already exists
-		ifstream empFileCheck(empFileName, ios::in);
-		int id, deptCode;
-		string firstName, lastName, position;
-		bool exists = false;
+// Function: Add record
+void Employee::addRecord(const Employee& emp) {
+    if (emp.getId() == 0 || emp.getFirstName().empty() || emp.getLastName().empty() ||
+        emp.getDepartmentCode() == 0 || emp.getPosition().empty() || emp.getHoursWorked() < 0) {
+        cout << "\t\t\a\n [ Cannot add record: All fields must be non-empty and valid! ]\n\n";
+        return;
+    }
 
-		while (empFileCheck >> id >> firstName >> lastName >> deptCode >> position) {
-			if (id == emp.getId()) {
-				exists = true;
-				break;
-			}
-		}
-		empFileCheck.close();
+    try {
+        ifstream empFileCheck(EMP_FILE_NAME);
+        checkFileAccess(empFileCheck);
 
-		if (exists) {
-			cout << endl << "Record with Employee Id: " << emp.getId() << " already exists. Cannot add duplicate." << endl << endl;
-			return;
-		}
+        int id, deptCode;
+        string firstName, lastName, position;
+        bool exists = false;
+        bool nameExists = false;
 
-		ofstream empFile(empFileName, ios::app);
-		ofstream empPayrollFile(empPayrollFileName, ios::app);
+        while (empFileCheck >> id >> firstName >> lastName >> deptCode >> position) {
+            if (id == emp.getId()) {
+                exists = true;
+                break;
+            }
+            if (firstName == emp.getFirstName() && lastName == emp.getLastName()) {
+                nameExists = true;
+                break;
+            }
+        }
+        empFileCheck.close();
 
-		if (empFile.fail() || empPayrollFile.fail())
-		{
-			throw runtime_error("ERROR ACCESSING FILE!");
-		} //end if
+        if (exists) {
+            cout << endl << "ℹ️\t Record with Employee Id: " << emp.getId() << " already exists. Cannot add duplicate." << endl << endl;
+            return;
+        }
+        if (nameExists) {
+            cout << endl << "ℹ️\t Record with Employee name: " << emp.getFirstName() << " " << emp.getLastName() << " already exists. Cannot add duplicate." << endl << endl;
+            return;
+        }
 
-		empFile << emp.getId() << "\t" << emp.getFirstName() << "\t" << emp.getLastName() << "\t" << emp.getDepartmentCode() << "\t" << emp.getPosition() << endl;
-		empPayrollFile << emp.getId() << "\t" << emp.getDepartmentCode() << "\t" << emp.getHoursWorked() << endl;
-		
-		cout << endl << endl << "Record with code : " << emp.getId() << " added successfully..." << endl << endl;
+        ofstream empFile(EMP_FILE_NAME, ios::app);
+        ofstream empPayrollFile(EMP_PAYROLL_FILE_NAME, ios::app);
+        checkFileAccess(empFile);
+        checkFileAccess(empPayrollFile);
 
-		empFile.close();
-		empPayrollFile.close();
+        writeRecord(empFile, empPayrollFile, emp);
+        empFile.close();
+        empPayrollFile.close();
+        cout << endl << "✅\t Record with Employee Id: " << emp.getId() << " added successfully." << endl;
+        cout << endl;
 
-	} //end try
-	catch (exception &i)
-	{
-		cerr << i.what();
-	} //end catch
-
+    } catch (exception &e) {
+        cerr << e.what() << endl;
+    }
 }
 
 
-void Employee::updateRecord(int updateId)
-{
-	string empFileName = "employee.txt";
-	string tempEmpFileName = "tempemp.txt";
-	string empPayrollFileName = "employeepayroll.txt";
-	string tempEmpPayrollFileName = "tempemppayroll.txt";
+// Function: Update employee record
+void Employee::updateRecord(int updateId) {
+    try {
+        bool found = false;
+        ifstream empFile(EMP_FILE_NAME);
+        ofstream empTempFile(TEMP_EMP_FILE_NAME);
+        ifstream empPayrollFile(EMP_PAYROLL_FILE_NAME);
+        ofstream tempEmpPayrollFile(TEMP_EMP_PAYROLL_FILE_NAME);
 
-	try {
-		bool found = false;
-		ifstream empFile(empFileName, ios::in);
-		ofstream empTempFile(tempEmpFileName, ios::app);
-		ifstream empPayrollFile(empPayrollFileName, ios::in);
-		ofstream tempEmpPayrollFile(tempEmpPayrollFileName, ios::app);
-		
-		Employee updateEmp;
-		Employee emp;
-		int id, rId, rdeptCode, deptCode;
-		string fn, ln, post;
-		float hrs;
+        checkFileAccess(empFile);
+        checkFileAccess(empPayrollFile);
+        checkFileAccess(empTempFile);
+        checkFileAccess(tempEmpPayrollFile);
 
-		if (empFile.fail() || empPayrollFile.fail() || empTempFile.fail() || tempEmpPayrollFile.fail())
-		{
-			throw runtime_error("ERROR ACCESSING FILE!");
-		} //end if
+        Employee emp;
+        int id, deptCode;
+        string firstName, lastName, position;
+        float hrs;
 
-		while (true)
-		{
-			empFile >> id >> fn >> ln >> deptCode >> post;
-			empPayrollFile >> rId >> rdeptCode >> hrs;
+        while (empFile >> id >> firstName >> lastName >> deptCode >> position &&
+               empPayrollFile >> id >> deptCode >> hrs) {
+            emp.setId(id);
+            emp.setFirstName(firstName);
+            emp.setLastName(lastName);
+            emp.setDepartmentCode(deptCode);
+            emp.setPosition(position);
+            emp.setHoursWorked(hrs);
 
-			emp.setId(id);
-			emp.setFirstName(fn);
-			emp.setLastName(ln);
-			emp.setDepartmentCode(deptCode);
-			emp.setPosition(post);
-			emp.setHoursWorked(hrs);
+            if (updateId == emp.getId()) {
+                found = true;
 
-			if (updateId == emp.getId() && updateId == rId && deptCode == rdeptCode)
-			{
-				system("cls");
-				found = true; //case where record is found
+                cout << "\n+--------------------------------------------------+" << endl;
+                cout << "|           EMPLOYEE RECORD FOUND                  |" << endl;
+                cout << "+--------------------------------------------------+" << endl;
+                emp.display();
+                cout << "\nPress Enter to continue...";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
 
-				cout << "\t~~~~~~~~~~~~~ EMPLOYEE RECORD FOUND ~~~~~~~~~~~~~" << endl << endl;
-				cout << "Employee Id : " << emp.getId() << " | " << "First Name : " << emp.getFirstName() << " | " << "Last Name : " << emp.getLastName() << " | " << "Department Code : " << emp.getDepartmentCode() << " | " << "Position : " << emp.getPosition() << " | " << "Hours Worked : " << emp.getHoursWorked() << endl << endl;
-				system("pause");
-				system("cls");
+                cout << "\n+--------------------------------------------------+" << endl;
+                cout << "|           UPDATE EMPLOYEE INFORMATION             |" << endl;
+                cout << "+---------------------------------------------------+" << endl;
 
-				cout << "\t~~~~~~~~~~~~~ ENTER UPDATE EMPLOYEE RECORD INFORMATION HERE ~~~~~~~~~~~~~" << endl << endl;
+                Employee updateEmp = createEmployee(updateId);
+                empTempFile << updateEmp.getId() << "\t" << updateEmp.getFirstName() << "\t" 
+                            << updateEmp.getLastName() << "\t" << updateEmp.getDepartmentCode() << "\t" 
+                            << updateEmp.getPosition() << endl;
+                tempEmpPayrollFile << updateEmp.getId() << "\t" << updateEmp.getDepartmentCode() << "\t" 
+                                   << updateEmp.getHoursWorked() << endl;
 
-				updateEmp = createEmployee(updateId);
-				empTempFile << updateEmp.getId() << "\t" << updateEmp.getFirstName() << "\t" << updateEmp.getLastName() << "\t" << updateEmp.getDepartmentCode() << "\t" << updateEmp.getPosition() << endl;
-				tempEmpPayrollFile << updateEmp.getId() << "\t" <<  updateEmp.getDepartmentCode() << "\t" << updateEmp.getHoursWorked() << endl;
+                cout << "\n\n\t\t\a\n[✅ Record with Employee Id: " << updateId << " has been updated" << endl << endl;
+            } else {
+                writeRecord(empTempFile, tempEmpPayrollFile, emp);
+            }
+        }
 
-				cout << "\n\n\t\t\a\nRecord with Employee Id: " << updateId << " has been updated" << endl << endl;
-				break;
-			} //end if
-			else
-			{
-				empTempFile << emp.getId() << "\t" << emp.getFirstName() << "\t" << emp.getLastName() << "\t" << emp.getDepartmentCode() << "\t" << emp.getPosition() << endl;
-				tempEmpPayrollFile << emp.getId() << "\t" <<  emp.getHoursWorked() << endl;
+        if (!found) {
+            cout << "\t\t\a\n[ ℹ️\t Record with Employee Id : " << updateId << " does not exist!!!\n\n";
+        }
 
-			} //end else
+        empFile.close();
+        empTempFile.close();
+        empPayrollFile.close();
+        tempEmpPayrollFile.close();
 
-			if (empFile.eof() || empPayrollFile.eof())
-				break;
+        remove(EMP_FILE_NAME.c_str());
+        rename(TEMP_EMP_FILE_NAME.c_str(), EMP_FILE_NAME.c_str());
+        remove(EMP_PAYROLL_FILE_NAME.c_str());
+        rename(TEMP_EMP_PAYROLL_FILE_NAME.c_str(), EMP_PAYROLL_FILE_NAME.c_str());
 
-		} //end while
-
-		if (found == false)
-		{
-			cout << "\t\t\a\nRecord with Employee Id : " << updateId << " does not exist!!!\n\n";
-		} //end if
-
-		empFile.close();
-		empTempFile.close();
-		empPayrollFile.close();
-		tempEmpPayrollFile.close();
-
-		remove("employee.txt");
-		rename("tempemp.txt", "employee.txt");
-		remove("employeepayroll.txt");
-		rename("tempemppayroll.txt", "employeepayroll.txt");
-
-
-	} //end try
-	catch (exception &i)
-	{
-		cerr << i.what();
-	} //end catch
+    } catch (exception &e) {
+        cerr << e.what() << endl;
+    }
 }
 
+// Function: View employee record
+void Employee::viewRecord(int searchId) {
+    try {
+        ifstream empFile(EMP_FILE_NAME);
+        ifstream empPayrollFile(EMP_PAYROLL_FILE_NAME);
 
-void Employee::viewRecord(int searchId)
-{
-	string empFileName = "employee.txt";
-	string empPayrollFileName = "employeepayroll.txt";
+        checkFileAccess(empFile);
+        checkFileAccess(empPayrollFile);
 
-	try {
-		ifstream empFile(empFileName, ios::in);
-		ifstream empPayrollFile(empPayrollFileName, ios::in);
+        bool found = false;
+        Employee emp;
+        int id, deptCode;
+        string firstName, lastName, position;
+        float hrs;
 
-		bool found = false;
-		Employee emp;
-		int id, payrollId, deptCode;
-		string fn, ln, post;
-		float hrs;
+        while (empFile >> id >> firstName >> lastName >> deptCode >> position && 
+               empPayrollFile >> id >> deptCode >> hrs) {
+            emp.setId(id);
+            emp.setFirstName(firstName);
+            emp.setLastName(lastName);
+            emp.setDepartmentCode(deptCode);
+            emp.setPosition(position);
+            emp.setHoursWorked(hrs);
+    
+            if (searchId == emp.getId()) {
+                found = true;
+                emp.display();
+                break;
+            }
+        }
 
-		if (empFile.fail() || empPayrollFile.fail())
-		{
-		throw runtime_error("ERROR ACCESSING FILE!");
-		} //end if
+        if (!found) {
+            cout << "\t\t\a\n[ℹ️ Record with Employee Id : " << searchId << " does not exist!!! ]\n\n";
+        }
 
-		while (!empFile.eof() || !empPayrollFile.eof())
-		{
-			empFile >> id >> fn >> ln >> deptCode >> post;
-			empPayrollFile >> payrollId >> deptCode >> hrs;
-
-			emp.setId(id);
-			emp.setFirstName(fn);
-			emp.setLastName(ln);
-			emp.setDepartmentCode(deptCode);
-			emp.setPosition(post);
-			emp.setHoursWorked(hrs);
-
-			if (searchId == emp.getId() && emp.getId() == payrollId)
-			{
-				found = true;
-				emp.display();
-				break;
-			} //end if
-
-		} //end while
-
-		if (found == false)
-		{
-			cout << "\t\t\a\nRecord with Employee Id : " << searchId << " does not exist!!!\n\n";
-		} //end if
-
-		empFile.close();
-		empPayrollFile.close();
-
-	} //end try
-	catch (exception &i)
-	{
-		cerr << i.what();
-	} //end catch
-
+    } catch (exception &i) {
+        cerr << i.what();
+    }
 }
 
+// Function: View all employee records
+void Employee::viewAllRecord() {
+    try {
+        ifstream empFile(EMP_FILE_NAME);
+        ifstream empPayrollFile(EMP_PAYROLL_FILE_NAME);
 
-void Employee::viewAllRecord()
-{
-	string empFileName = "employee.txt";
-	string empPayrollFileName = "employeepayroll.txt";
+        checkFileAccess(empFile);
+        checkFileAccess(empPayrollFile);
 
-	try {
-		ifstream empFile(empFileName, ios::in);
-		ifstream empPayrollFile(empPayrollFileName, ios::in);
+        int recordCount = 0;
+        Employee emp;
+        int id, deptCode;
+        string firstName, lastName, position;
+        float hrs;
 
-		int recordCount = 0;
-		Employee emp;
-		int id, payrollId, deptCode;
-		string fn, ln, post;
-		float hrs;
+        while (empFile >> id >> firstName >> lastName >> deptCode >> position && 
+               empPayrollFile >> id >> deptCode >> hrs) {
+            emp.setId(id);
+            emp.setFirstName(firstName);
+            emp.setLastName(lastName);
+            emp.setDepartmentCode(deptCode);
+            emp.setPosition(position);
+            emp.setHoursWorked(hrs);
 
-		if (empFile.fail() || empPayrollFile.fail())
-		{
-		throw runtime_error("ERROR ACCESSING FILE!");
-		} //end if
+            ++recordCount;
+            emp.display();
+            cout << endl;
+        }
 
-		while (true)
-		{
-			empFile >> id >> fn >> ln >> deptCode >> post;
-			empPayrollFile >> payrollId >> deptCode >> hrs;
+        if (recordCount == 0) {
+            cout << "\t\t\a\n [ℹ️ No record(s) Employee exist!!! ]\n\n";
+        }
 
-			emp.setId(id);
-			emp.setFirstName(fn);
-			emp.setLastName(ln);
-			emp.setDepartmentCode(deptCode);
-			emp.setPosition(post);
-			emp.setHoursWorked(hrs);
-
-			if (empFile.eof() && empPayrollFile.eof()) //exit reading from file when end of file is reached
-			{
-				break;
-			} //end if
-
-			++recordCount;
-			emp.display();
-			cout << endl;
-
-		} //end while
-
-		if (recordCount == 0)
-		{
-			cout << "\t\t\a\nNo record(s) Employee exist!!!\n\n";
-		} //end if
-
-		empFile.close();
-		empPayrollFile.close();
-
-	} //end try
-	catch (exception &i)
-	{
-		cerr << i.what();
-	} //end catch
-
+    } catch (exception &i) {
+        cerr << i.what();
+    }
 }
 
+// Function: Delete employee record
+void Employee::deleteRecord(int deleteId) {
+    try {
+        bool found = false;
+        ifstream empFile(EMP_FILE_NAME);
+        ofstream empTempFile(TEMP_EMP_FILE_NAME);
+        ifstream empPayrollFile(EMP_PAYROLL_FILE_NAME);
+        ofstream tempEmpPayrollFile(TEMP_EMP_PAYROLL_FILE_NAME);
 
-void Employee::deleteRecord(int deleteId)
-{
-	string empFileName = "employee.txt";
-	string tempEmpFileName = "tempemp.txt";
-	string empPayrollFileName = "employeepayroll.txt";
-	string tempEmpPayrollFileName = "tempemppayroll.txt";
+        checkFileAccess(empFile);
+        checkFileAccess(empPayrollFile);
+        checkFileAccess(empTempFile);
+        checkFileAccess(tempEmpPayrollFile);
 
-	try {
-		bool found = false;
-		ifstream empFile(empFileName, ios::in);
-		ofstream empTempFile(tempEmpFileName, ios::app);
-		ifstream empPayrollFile(empPayrollFileName, ios::in);
-		ofstream tempEmpPayrollFile(tempEmpPayrollFileName, ios::app);
+        Employee emp;
+        int id, deptCode;
+        string firstName, lastName, position;
+        float hrs;
 
-		Employee emp;
-		int id, rId, rdeptCode, deptCode;
-		string fn, ln, post;
-		float hrs;
+        while (empFile >> id >> firstName >> lastName >> deptCode >> position &&
+               empPayrollFile >> id >> deptCode >> hrs) {
+            emp.setId(id);
+            emp.setFirstName(firstName);
+            emp.setLastName(lastName);
+            emp.setDepartmentCode(deptCode);
+            emp.setPosition(position);
+            emp.setHoursWorked(hrs);
 
-		if (empFile.fail() || empPayrollFile.fail() || empTempFile.fail() || tempEmpPayrollFile.fail())
-		{
-			throw runtime_error("ERROR ACCESSING FILE!");
-		} //end if
+            if (deleteId == emp.getId()) {
+                found = true;
 
-		while (!empFile.eof() || !empPayrollFile.eof())
-		{
-			empFile >> id >> fn >> ln >> deptCode >> post;
-			empPayrollFile >> rId >> rdeptCode >> hrs;
+                cout << "\n+--------------------------------------------------+" << endl;
+                cout << "|           EMPLOYEE RECORD FOUND                  |" << endl;
+                cout << "+--------------------------------------------------+" << endl;
+                emp.display();
+                cout << "\n+--------------------------------------------------+" << endl;
 
-			emp.setId(id);
-			emp.setFirstName(fn);
-			emp.setLastName(ln);
-			emp.setDepartmentCode(deptCode);
-			emp.setPosition(post);
-			emp.setHoursWorked(hrs);
+                cout << "❗ Are you sure you want to delete this record? (y/n): ";
+                char confirm;
+                cin >> confirm;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                if (confirm == 'y' || confirm == 'Y') {
+                    cout << "\n❌ Deleting record..." << endl;
+                    // Do not write this record to temp files (effectively deleting)
+                    continue;
+                } else {
+                    cout << "\n❌ Deletion cancelled. Record will be kept." << endl;
+                }
+            }
 
-			if (deleteId == emp.getId() && emp.getId() == rId)
-			{
-				system("cls");
-				found = true; //case where record is found
+            writeRecord(empTempFile, tempEmpPayrollFile, emp);
+        }
 
-				cout << "\t~~~~~~~~~~~~~ EMPLOYEE RECORD FOUND ~~~~~~~~~~~~~" << endl << endl;
-				cout << "Employee Id : " << emp.getId() << " | " << "First Name : " << emp.getFirstName() << " | " << "Last Name : " << emp.getLastName() << " | " << "Department Code : " << emp.getDepartmentCode() << " | " << "Position : " << emp.getPosition() << " | " << "Hours Worked : " << emp.getHoursWorked() << endl << endl;
-				system("pause");
-				system("cls");
+        if (!found) {
+            cout << "\t\t\a\n [ℹ️ Record with Employee Id : " << deleteId << " does not exist!!! ]\n\n";
+        }
 
-				continue; //skip writing record to temporay file
+        empFile.close();
+        empTempFile.close();
+        empPayrollFile.close();
+        tempEmpPayrollFile.close();
 
-				cout << "\n\n\t\t\a\nRecord with Employee Id: " << deleteId << " has been deleted" << endl << endl;
-				break;
-			} //end if
-			else
-			{
-				empTempFile << emp.getId() << "\t" << emp.getFirstName() << "\t" << emp.getLastName() << "\t" << emp.getDepartmentCode() << "\t" << emp.getPosition() << endl;
-				tempEmpPayrollFile << emp.getId() << "\t" << emp.getHoursWorked() << endl;
+        remove(EMP_FILE_NAME.c_str());
+        rename(TEMP_EMP_FILE_NAME.c_str(), EMP_FILE_NAME.c_str());
+        remove(EMP_PAYROLL_FILE_NAME.c_str());
+        rename(TEMP_EMP_PAYROLL_FILE_NAME.c_str(), EMP_PAYROLL_FILE_NAME.c_str());
 
-			} //end else
-
-		} //end while
-
-		if (found == false)
-		{
-			cout << "\t\t\a\nRecord with Employee Id : " << deleteId << " does not exist!!!\n\n";
-		} //end if
-
-		empFile.close();
-		empTempFile.close();
-		empPayrollFile.close();
-		tempEmpPayrollFile.close();
-
-		remove("employee.txt");
-		rename("tempemp.txt", "employee.txt");
-		remove("employeepayroll.txt");
-		rename("tempemppayroll.txt", "employeepayroll.txt");
-
-	} //end try
-	catch (exception &i)
-	{
-		cerr << i.what();
-	} //end catch
+    } catch (exception &e) {
+        cerr << e.what() << endl;
+    }
 }
-

@@ -7,32 +7,35 @@
 #include <iostream>
 #include <functional>
 
-class PayList
-{
+class PayList {
 private:
-    PayrollNode *head;
-
-    // Helper functions for merge sort
-    PayrollNode* mergeSort(PayrollNode* node, std::function<bool(const Payroll&, const Payroll&)> compare);
-    PayrollNode* getMiddle(PayrollNode* node);
-    PayrollNode* merge(PayrollNode* left, PayrollNode* right, std::function<bool(const Payroll&, const Payroll&)> compare);
+    PayrollNode* head;
 
 public:
     PayList();
     ~PayList();
 
-    bool isEmpty();
-    bool isFull();
-    void insertAtFront(Payroll);
-    int countNodes();
-    void traverse();
+    // Delete copy semantics
+    PayList(const PayList&) = delete;
+    PayList& operator=(const PayList&) = delete;
 
-    // Merge sort methods
+    bool isEmpty() const;
+    bool isFull() const;
+    void insertAtFront(Payroll payData);
+    int countNodes() const;
+    void traverse() const;
+
     void mergeSortById();
     void mergeSortByLastName();
     void mergeSortByDepartmentCode();
     void mergeSortByPosition();
+
+private:
+    PayrollNode* mergeSort(PayrollNode *node, std::function<bool(const Payroll&, const Payroll&)> compare);
+    PayrollNode* getMiddle(PayrollNode *node);
+    PayrollNode* merge(PayrollNode *left, PayrollNode *right, std::function<bool(const Payroll&, const Payroll&)> compare);
 };
+
 
 #endif
 

@@ -1,38 +1,37 @@
 #ifndef EMPNODE_H
 #define EMPNODE_H
 
-
 #include "Employee.h"
 #include <iostream>
 
-class EmpNode{
+class EmpNode {
 private:
-	Employee data;
-	EmpNode *next;
+    Employee data;
+    EmpNode *next;
 
 public:
-	//destructure constructor
-	~EmpNode();
+    // Destructor
+    ~EmpNode();
 
-	//default constructor
-	EmpNode();
+    // Default constructor
+    EmpNode();
 
-	//primary constructor
-	EmpNode(Employee nodeData);
+    // Primary constructor
+    EmpNode(Employee nodeData);
 
-	EmpNode(const EmpNode &emp);
+    // Copy constructor
+    EmpNode(const EmpNode &nd);
 
-	//--------- mutators ------------//
-	void setNext(EmpNode *nxt);
+    // Mutators
+    void setNext(EmpNode *nxt);
+    void setData(Employee emp);
 
-	void setData(Employee emp);
+    // Accessors
+    Employee getData() const;
+    EmpNode* getNext() const;
 
-	//-------- accessors -----------//
-	Employee getData() const;
-
-	EmpNode* getNext() const;
-
-	void display() const;
-
+    // Display method
+    void display() const;
 };
+
 #endif

@@ -1,130 +1,112 @@
 #include "Employee.h"
 #include "EmpNode.h"
 #include "EmpList.h"
-
 #include <iostream>
+#include <functional>
+
 using namespace std;
 
-EmpList::EmpList()
-{
+EmpList::EmpList() {
     head = nullptr;
 }
 
-EmpList::~EmpList()
-{
-    // Destructor implementation can be added here if needed
+EmpList::~EmpList() {
+    EmpNode* current = head;
+    while (current != nullptr) {
+        EmpNode* nextNode = current->getNext();
+        delete current; // Free the current node
+        current = nextNode; // Move to the next node
+    }
 }
 
-bool EmpList::isEmpty()
-{
+bool EmpList::isEmpty() {
     return head == nullptr;
 }
 
-bool EmpList::isFull()
-{
+bool EmpList::isFull() {
     EmpNode *temp = new EmpNode();
-    if (temp != nullptr)
-    {
+    if (temp != nullptr) {
         delete temp;
         return false;
     }
     return true;
 }
 
-void EmpList::insertAtFront(Employee empData)
-{
-    if (!isFull())
-    {
+void EmpList::insertAtFront(Employee empData) {
+    if (!isFull()) {
         EmpNode *newNode = new EmpNode(empData);
-        if (newNode != nullptr)
-        {
+        if (newNode != nullptr) {
             newNode->setNext(head);
             head = newNode;
+        } else {
+            cout << "[❌ Error allocating memory for node! ]" << endl << endl;
         }
-        else
-        {
-            cout << "Error allocating memory for node!" << endl << endl;
-        }
-    }
-    else
-    {
-        cout << "List already full!" << endl << endl;
+    } else {
+        cout << "[ℹ️ List already full! ]" << endl << endl;
     }
 }
 
-int EmpList::countNodes()
-{
+int EmpList::countNodes() {
     int count = 0;
     EmpNode *temp = head;
-    while (temp != nullptr)
-    {
+    while (temp != nullptr) {
         ++count;
         temp = temp->getNext();
     }
     return count;
 }
 
-void EmpList::traverse()
-{
-    if (!isEmpty())
-    {
+void EmpList::traverse() {
+    if (!isEmpty()) {
         EmpNode *temp = head;
-        while (temp != nullptr)
-        {
+        
+        while (temp != nullptr) {
             temp->display();
             temp = temp->getNext();
             cout << endl;
         }
-    }
-    else
-    {
-        cout << "List is empty, no nodes to traverse!" << endl;
+    } else {
+        cout << "[ℹ️ List is empty, no records to display! ]" << endl;
     }
 }
 
 // Merge Sort by ID
-void EmpList::mergeSortById()
-{
+void EmpList::mergeSortById() {
     head = mergeSort(head, [](const Employee& a, const Employee& b) {
         return a.getId() < b.getId();
     });
 }
 
 // Merge Sort by Last Name
-void EmpList::mergeSortByLastName()
-{
+void EmpList::mergeSortByLastName() {
     head = mergeSort(head, [](const Employee& a, const Employee& b) {
         return a.getLastName() < b.getLastName();
     });
 }
 
 // Merge Sort by Department Code
-void EmpList::mergeSortByDepartmentCode()
-{
+void EmpList::mergeSortByDepartmentCode() {
     head = mergeSort(head, [](const Employee& a, const Employee& b) {
         return a.getDepartmentCode() < b.getDepartmentCode();
     });
 }
 
 // Merge Sort by Position
-void EmpList::mergeSortByPosition()
-{
+void EmpList::mergeSortByPosition() {
     head = mergeSort(head, [](const Employee& a, const Employee& b) {
         return a.getPosition() < b.getPosition();
     });
 }
 
 // Merge Sort by Hours Worked
-void EmpList::mergeSortByHoursWorked()
-{
+void EmpList::mergeSortByHoursWorked() {
     head = mergeSort(head, [](const Employee& a, const Employee& b) {
         return a.getHoursWorked() < b.getHoursWorked();
     });
 }
 
 // Helper function to perform merge sort
-EmpNode* EmpList::mergeSort(EmpNode* node, std::function<bool(const Employee&, const Employee&)> compare)
-{
+EmpNode* EmpList::mergeSort(EmpNode* node, std::function<bool(const Employee&, const Employee&)> compare) {
     if (!node || !node->getNext())
         return node;
 
@@ -139,15 +121,13 @@ EmpNode* EmpList::mergeSort(EmpNode* node, std::function<bool(const Employee&, c
 }
 
 // Function to get the middle node of the list
-EmpNode* EmpList::getMiddle(EmpNode* node)
-{
+EmpNode* EmpList::getMiddle(EmpNode* node) {
     if (!node) return node;
 
     EmpNode* slow = node;
     EmpNode* fast = node->getNext();
 
-    while (fast && fast->getNext())
-    {
+    while (fast && fast->getNext()) {
         slow = slow->getNext();
         fast = fast->getNext()->getNext();
     }
@@ -155,18 +135,14 @@ EmpNode* EmpList::getMiddle(EmpNode* node)
 }
 
 // Function to merge two sorted lists
-EmpNode* EmpList::merge(EmpNode* left, EmpNode* right, std::function<bool(const Employee&, const Employee&)> compare)
-{
+EmpNode* EmpList::merge(EmpNode* left, EmpNode* right, std::function<bool(const Employee&, const Employee&)> compare) {
     if (!left) return right;
     if (!right) return left;
 
-    if (compare(left->getData(), right->getData()))
-    {
+    if (compare(left->getData(), right->getData())) {
         left->setNext(merge(left->getNext(), right, compare));
         return left;
-    }
-    else
-    {
+    } else {
         right->setNext(merge(left, right->getNext(), compare));
         return right;
     }

@@ -1,55 +1,38 @@
 #include "Employee.h"
 #include "EmpNode.h"
-#include <iostream> 
+#include <iostream>
 
-
-//destructure constructor
+// Destructor
 EmpNode::~EmpNode() {}
 
-//default constructor
-EmpNode::EmpNode() :data()
-{
-	next = nullptr;
+// Default constructor
+EmpNode::EmpNode() : data(), next(nullptr) {}
+
+// Primary constructor
+EmpNode::EmpNode(Employee nodeData) : data(nodeData), next(nullptr) {}
+
+// Copy constructor
+EmpNode::EmpNode(const EmpNode &nd) : data(nd.getData()), next(nullptr) {}
+
+// Mutators
+void EmpNode::setNext(EmpNode *nxt) {
+    next = nxt;
 }
 
-//primary constructor
-EmpNode::EmpNode(Employee nodeData)
-	:data(nodeData)
-{
-	//this->data = nodeData;
-	next = nullptr;
+void EmpNode::setData(Employee empObj) {
+    data = empObj;
 }
 
-//copy constructor
-EmpNode::EmpNode(const EmpNode &nd)
-	:data(nd.getData())
-{
-	this->next = nd.next;
+// Accessors
+Employee EmpNode::getData() const {
+    return data;
 }
 
-void EmpNode::setNext(EmpNode *nxt)
-{
-	next = nxt;
+EmpNode* EmpNode::getNext() const {
+    return next;
 }
 
-void EmpNode::setData(Employee empObj)
-{
-	data = empObj;
+// Display method
+void EmpNode::display() const {
+    data.display();
 }
-
-Employee EmpNode::getData() const
-{
-	return data;
-}
-
-EmpNode* EmpNode::getNext() const
-{
-	return next;
-}
-
-void EmpNode::display() const
-{
-	data.display();
-}
-
-

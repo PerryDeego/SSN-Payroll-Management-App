@@ -1,59 +1,64 @@
 //........Preprocessor Directives.......||
 #ifndef EMPLOYEE_H
 #define EMPLOYEE_H
-#include <iostream> 					                                                                          			
-//......................................||
+
+#include <iostream>
+#include <string> // Include string header for std::string
 
 class Employee {
 private:
-	int id;
-	std:: string firstName;
-	std:: string lastName;
-	int departmentCode;
-	std:: string position;
-	float hoursWorked;
+    int id;
+    std::string firstName;
+    std::string lastName;
+    int departmentCode;
+    std::string position;
+    float hoursWorked;
 
 public:
-	//destructor
-	~Employee();
+    // Destructor
+    ~Employee();
 
-	//default constructor
-	Employee();
+    // Default constructor
+    Employee();
 
+    // Primary constructor
+    Employee(int id, const std::string& firstName, const std::string& lastName, 
+             int departmentCode, const std::string& position, float hoursWorked);
 
-	//primary constructor
-	Employee(int, std::string, std::string, int, std::string, float);
+    // Copy constructor
+    Employee(const Employee &Emp);
 
-	//copy constructor
-	Employee(const Employee &Emp);
+    // Mutators
+    void setId(int empId);
+    void setFirstName(const std::string& fn);
+    void setLastName(const std::string& ln);
+    void setDepartmentCode(int deptCode);
+    void setPosition(const std::string& post);
+    void setHoursWorked(float hr);
 
-	//mutators
-	void setId(int);
-	void setFirstName(std::string);
-	void setLastName(std::string);
-	void setDepartmentCode(int);
-	void setPosition(std::string);
-	void setHoursWorked(float);
+    // Accessors
+    int getId() const;
+    std::string getFirstName() const;
+    std::string getLastName() const;
+    int getDepartmentCode() const;
+    std::string getPosition() const;
+    float getHoursWorked() const;
 
-	//accessors
-	int getId() const;
-	std::string getFirstName() const;
-	std::string getLastName() const;
-	int getDepartmentCode() const;
-	std::string getPosition() const;
-	float getHoursWorked() const;
+    //--------- Methods -----------//
+    void display() const;
+    std::string getValidatedString(const std::string& prompt);
+    float getValidatedFloat(const std::string& prompt);
+    int getValidatedInt(const std::string& prompt);
 
-	//--------- methods -----------//
-	void display() const;
-
-	Employee createEmployee(int);
-	void addRecord(Employee emp);
-	void updateRecord(int);
-	void viewRecord(int);
-	void viewAllRecord();
-	void deleteRecord(int);
-
+    void writeRecord(std::ofstream& empFile, std::ofstream& empPayrollFile, const Employee& emp);
+    Employee createEmployee(int empId);
+    bool checkFileAccess(std::ios& file);
+    void addRecord(const Employee& emp);
+    void updateRecord(int empId);
+    void viewRecord(int empId);
+    void viewAllRecord();
+    void deleteRecord(int empId);
+	
 };
-#endif
 
-
+#endif // EMPLOYEE_H

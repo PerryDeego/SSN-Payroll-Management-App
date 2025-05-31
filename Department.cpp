@@ -4,8 +4,15 @@
 #include <limits>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+// Constants for file names
+const string DEPT_FILE_NAME = "department.txt";
+const string TEMP_DEPT_FILE_NAME = "tempdept.txt";
+const string RATES_FILE_NAME = "rates.txt";
+const string TEMP_RATES_FILE_NAME = "temprates.txt";
 
 // Destructor
 Department::~Department() {}
@@ -15,12 +22,7 @@ Department::Department() : code(0), name("department name"), hourlyRate(0.0f), o
 
 // Primary constructor
 Department::Department(int code, const string& name, float hourlyRate, float overtimeRate)
-: code(code), name(name), hourlyRate(hourlyRate), overtimeRate(overtimeRate) {
-    setCode(code);
-    setName(name);
-    setHourlyRate(hourlyRate);
-    setOvertimeRate(overtimeRate);
-}
+    : code(code), name(name), hourlyRate(hourlyRate), overtimeRate(overtimeRate) {}
 
 // Copy constructor
 Department::Department(const Department &Dept)
@@ -28,7 +30,7 @@ Department::Department(const Department &Dept)
 
 // Mutators
 void Department::setCode(int cd) { code = cd; }
-void Department::setName(const string& nm) { name = nm; }
+void Department::setName(const string& deptName) { name = deptName; }
 void Department::setHourlyRate(float hrRate) { hourlyRate = hrRate; }
 void Department::setOvertimeRate(float otRate) { overtimeRate = otRate; }
 
@@ -38,149 +40,192 @@ string Department::getName() const { return name; }
 float Department::getHourlyRate() const { return hourlyRate; }
 float Department::getOvertimeRate() const { return overtimeRate; }
 
-// Display method
-void Department::display() const {
+// Function: Display header for department records
+void Department::displayHeader() const {
     cout << "+-------------------+--------------------------+----------------+-------------------+" << endl;
-    cout << "| Department Code   | Department Name          | Hourly Rate    | Overtime Rate     |" << endl;
-    cout << "+-------------------+--------------------------+----------------+-------------------+" << endl;
-    cout << "| " << setw(17) << left << getCode()
-         << "| " << setw(26) << left << getName().substr(0, 24)
-         << "| $" << setw(14) << right << fixed << setprecision(2) << getHourlyRate()
-         << " | $" << setw(16) << right << fixed << setprecision(2) << getOvertimeRate()
-         << " |" << endl;
+    cout << "| DEPARTMENT CODE   | DEPARTMENT NAME          | HOURLY RATE    | OVERTIME RATE     |" << endl;
     cout << "+-------------------+--------------------------+----------------+-------------------+" << endl;
 }
 
-// Create department
+void Department::display() const {
+    cout << "|+ Department Code   : " << getCode() << endl;
+    cout << "|+ Department Name   : " << getName() << endl;
+    cout << "|+ Hourly Rate       : $" << fixed << setprecision(2) << getHourlyRate() << endl;
+    cout << "|+ Overtime Rate     : $" << fixed << setprecision(2) << getOvertimeRate() << endl;
+    cout << "+-----------------------------------------------+" ;
+}
+
+// Utility function to get validated rate input
+float Department::getValidatedRate(const std::string& prompt) {
+    float rate;
+    cout << prompt;
+    while (!(cin >> rate) || rate <= 0.0f) {
+        cout << "❌ Invalid input. Please enter a positive numeric value: ";
+        cin.clear(); // Clear the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+    }
+    return rate;
+}
+
+// Function: Create department
 Department Department::createDepartment(int deptcode) {
     string name;
-    float hourlyRate, overtimeRate;
+    float hourlyRate = 0.0f, overtimeRate = 0.0f;
 
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cout << "Enter Department name: ";
+    cout << "➡️\t Enter Department name: ";
     getline(cin, name);
-    cout << "Enter Department hourly rate: ";
-    cin >> hourlyRate;
-    cout << "Enter Department overtime rate: ";
-    cin >> overtimeRate;
-
+    cout << endl;
+    
+    // Input validation for hourly rate
+    hourlyRate = getValidatedRate("➡️\t Enter Department hourly rate: ");
+    cout << endl;
+    
+    // Input validation for overtime rate
+    overtimeRate = getValidatedRate("➡️\t Enter Department overtime rate: ");
+    cout << endl;
+    
     return Department(deptcode, name, hourlyRate, overtimeRate);
 }
 
 // Utility function to check file access
 bool Department::checkFileAccess(std::ios& file) {
     if (file.fail()) {
-        throw std::runtime_error("ERROR ACCESSING FILE!");
+        throw std::runtime_error("[❌ ERROR ACCESSING FILE! ]");
     }
     return true; // Return true if no error
 }
 
+// Helper function to write a department record to files
+void Department::writeRecord(ofstream& deptFile, ofstream& ratesFile, const Department& dept) {
+    deptFile << dept.getCode() << "\t" << dept.getName() << endl;
+    ratesFile << dept.getCode() << "\t" << dept.getHourlyRate() << "\t" << dept.getOvertimeRate() << endl;
+}
 
-
-// Add record
+// Function: Add record
 void Department::addRecord(const Department& dept) {
-    if (dept.getCode() == 0 || dept.getName().empty() || dept.getHourlyRate() == 0.0f || dept.getOvertimeRate() == 0.0f) {
-        cout << "\t\t\a\nCannot add record: All fields must be non-empty and non-zero!\n\n";
+    if (dept.getCode() == 0 || dept.getName().empty() || dept.getHourlyRate() <= 0.0f || dept.getOvertimeRate() <= 0.0f) {
+        cout << "\t\t\a\n [❌ Cannot add record: All fields must be non-empty and non-zero! ]\n\n";
         return;
     }
 
-    string deptFileName = "department.txt";
-    string ratesFileName = "rates.txt";
-
     try {
-        ifstream deptFileCheck(deptFileName);
-        checkFileAccess(deptFileCheck);
+        ifstream deptNewFile(DEPT_FILE_NAME);
+        checkFileAccess(deptNewFile);
 
         int deptCode;
-        string detname;
+        string deptName;
         bool exists = false;
 
-        while (deptFileCheck >> deptCode) {
-            deptFileCheck.ignore(); // skip tab
-            getline(deptFileCheck, detname);
+        // Check for duplicate code or name
+        while (deptNewFile >> deptCode) {
+            deptNewFile.ignore(); // skip tab
+            getline(deptNewFile, deptName);
+
+            // Compare code or name (case-sensitive)
             if (dept.getCode() == deptCode) {
+                cout << "\t\t\a\n [❌ Record with Department Code: " << dept.getCode() << " already exists!!! ]\n\n";
+                exists = true;
+                break;
+            } else if (dept.getName() == deptName) {
+                cout << "\t\t\a\n [❌ Record with Department Name: " << dept.getName() << " already exists!!! ]\n\n";
                 exists = true;
                 break;
             }
         }
-        deptFileCheck.close();
+        deptNewFile.close();
 
         if (exists) {
-            cout << "\t\t\a\nRecord with Department Code: " << dept.getCode() << " already exists!!!\n\n";
             return;
         }
 
-        ofstream deptFile(deptFileName, ios::app);
-        ofstream ratesFile(ratesFileName, ios::app);
+        ofstream deptFile(DEPT_FILE_NAME, ios::app);
+        ofstream ratesFile(RATES_FILE_NAME, ios::app);
         checkFileAccess(deptFile);
         checkFileAccess(ratesFile);
 
-        deptFile << dept.getCode() << "\t" << dept.getName() << endl;
-        ratesFile << dept.getCode() << "\t" << dept.getHourlyRate() << "\t" << dept.getOvertimeRate() << endl;
-        cout << "Record with code: " << dept.getCode() << " added successfully..." << endl;
+        writeRecord(deptFile, ratesFile, dept);
+        deptFile.close();
+        ratesFile.close();
+        cout << "[✅ Record with code: " << dept.getCode() << " added successfully... ]" << endl;
 
-    } catch (exception &e) {
+    } catch (const exception &e) {
         cerr << e.what() << endl;
     }
 }
 
-// Update record
+// Function: Update record
 void Department::updateRecord(int updateCode) {
-    string deptFileName = "department.txt";
-    string tempDeptFileName = "tempdept.txt";
-    string ratesFileName = "rates.txt";
-    string tempRatesFileName = "temprates.txt";
-
     try {
-        ifstream deptFile(deptFileName);
-        ifstream ratesFile(ratesFileName);
-        ofstream tempDeptFile(tempDeptFileName);
-        ofstream tempRatesFile(tempRatesFileName);
+        ifstream deptFile(DEPT_FILE_NAME);
+        ifstream ratesFile(RATES_FILE_NAME);
+        ofstream tempDeptFile(TEMP_DEPT_FILE_NAME);
+        ofstream tempRatesFile(TEMP_RATES_FILE_NAME);
+
         checkFileAccess(deptFile);
         checkFileAccess(ratesFile);
         checkFileAccess(tempDeptFile);
         checkFileAccess(tempRatesFile);
 
         bool found = false;
-        Department dept;
-        int deptCode, deptRateCode;
-        string deptName;
-        float hrRate, otRate;
+        vector<pair<int, string>> existingRecords; // Store existing records for duplicate checking
 
-        while (deptFile >> deptCode) {
+        while (true) {
+            int deptCode, deptRateCode;
+            string deptName;
+            float hrRate, otRate;
+
+            if (!(deptFile >> deptCode)) break; // End of file
             deptFile.ignore(); // skip tab
             getline(deptFile, deptName);
+
             if (!(ratesFile >> deptRateCode >> hrRate >> otRate)) break;
 
-            dept.setCode(deptCode);
-            dept.setName(deptName);
-            dept.setHourlyRate(hrRate);
-            dept.setOvertimeRate(otRate);
+            existingRecords.emplace_back(deptCode, deptName);
 
-            if (updateCode == dept.getCode() && dept.getCode() == deptRateCode) {
+            if (deptCode == updateCode && deptRateCode == updateCode) {
                 found = true;
-                cout << "\n+--------------------------------------------------+" << endl;
-                cout << "|           DEPARTMENT RECORD FOUND                |" << endl;
-                cout << "+--------------------------------------------------+" << endl;
-                cout << "Department Code: " << dept.getCode() << " | Department Name: " << dept.getName() 
-                     << " | Hourly Rate: " << dept.getHourlyRate() << " | Overtime Rate: " << dept.getOvertimeRate() << endl;
 
-                cout << "\n+--------------------------------------------------+" << endl;
-                cout << "|       ENTER UPDATE DEPARTMENT RECORD INFORMATION |" << endl;
-                cout << "+--------------------------------------------------+" << endl;
+                cout << "\n+--------------------------------------------------+\n"
+                     << "|           DEPARTMENT RECORD FOUND                |\n"
+                     << "+--------------------------------------------------+\n"
+                     << "Department Code: " << deptCode
+                     << " | Department Name: " << deptName
+                     << " | Hourly Rate: " << hrRate
+                     << " | Overtime Rate: " << otRate << endl;
 
-                Department updateDept = createDepartment(updateCode);
-                tempDeptFile << updateDept.getCode() << "\t" << updateDept.getName() << endl;
-                tempRatesFile << updateDept.getCode() << "\t" << updateDept.getHourlyRate() << "\t" << updateDept.getOvertimeRate() << endl;
-                cout << "\nRecord with Department Code: " << updateCode << " has been updated" << endl;
+                cout << "\n+--------------------------------------------------+\n"
+                     << "|       ENTER UPDATE DEPARTMENT RECORD INFORMATION |\n"
+                     << "+--------------------------------------------------+\n";
+
+                Department updatedDept = createDepartment(updateCode);
+
+                // Check for duplicate name excluding current record
+                bool duplicateFound = false;
+                for (const auto& record : existingRecords) {
+                    if (updatedDept.getName() == record.second && updatedDept.getCode() != record.first) {
+                        cout << "\t\t\a\n [❌ Duplicate Department Name: " << updatedDept.getName() << " already exists!!! ]\n\n";
+                        duplicateFound = true;
+                        break;
+                    }
+                }
+
+                if (duplicateFound) {
+                    // Write original record back since update is not allowed
+                    writeRecord(tempDeptFile, tempRatesFile, Department(deptCode, deptName, hrRate, otRate));
+                } else {
+                    // Write updated record
+                    writeRecord(tempDeptFile, tempRatesFile, updatedDept);
+                    cout << "\n[✅ Record with Department Code: " << updateCode << " has been updated ]" << endl;
+                }
             } else {
-                tempDeptFile << dept.getCode() << "\t" << dept.getName() << endl;
-                tempRatesFile << dept.getCode() << "\t" << dept.getHourlyRate() << "\t" << dept.getOvertimeRate() << endl;
+                // Write existing record as is
+                writeRecord(tempDeptFile, tempRatesFile, Department(deptCode, deptName, hrRate, otRate));
             }
         }
 
         if (!found) {
-            cout << "\t\t\a\nRecord with Department Code: " << updateCode << " does not exist!!!\n\n";
+            cout << "\t\t\a\n [❌ Record with Department Code: " << updateCode << " does not exist!!! ]\n\n";
         }
 
         // Clean up
@@ -189,40 +234,39 @@ void Department::updateRecord(int updateCode) {
         tempDeptFile.close();
         tempRatesFile.close();
 
-        remove(deptFileName.c_str());
-        rename(tempDeptFileName.c_str(), deptFileName.c_str());
-        remove(ratesFileName.c_str());
-        rename(tempRatesFileName.c_str(), ratesFileName.c_str());
+        // Replace old files with updated temp files
+        remove(DEPT_FILE_NAME.c_str());
+        rename(TEMP_DEPT_FILE_NAME.c_str(), DEPT_FILE_NAME.c_str());
+        remove(RATES_FILE_NAME.c_str());
+        rename(TEMP_RATES_FILE_NAME.c_str(), RATES_FILE_NAME.c_str());
 
-    } catch (exception &e) {
-        cerr << e.what() << endl;
+    } catch (const exception& e) {
+        cerr << "Error: " << e.what() << endl;
     }
 }
 
-// View record
+// Function: View record
 void Department::viewRecord(int searchCode) {
-    string deptFileName = "department.txt";
-    string ratesFileName = "rates.txt";
-
     try {
-        ifstream deptFile(deptFileName);
-        ifstream ratesFile(ratesFileName);
+        ifstream deptFile(DEPT_FILE_NAME);
+        ifstream ratesFile(RATES_FILE_NAME);
         checkFileAccess(deptFile);
         checkFileAccess(ratesFile);
 
         bool found = false;
         Department dept;
         int deptCode, deptRateCode;
-        string nm;
+        string deptName;
         float hrRate, otRate;
 
+        displayHeader();
         while (deptFile >> deptCode) {
             deptFile.ignore(); // skip tab
-            getline(deptFile, nm);
+            getline(deptFile, deptName);
             if (!(ratesFile >> deptRateCode >> hrRate >> otRate)) break;
 
             dept.setCode(deptCode);
-            dept.setName(nm);
+            dept.setName(deptName);
             dept.setHourlyRate(hrRate);
             dept.setOvertimeRate(otRate);
 
@@ -234,7 +278,7 @@ void Department::viewRecord(int searchCode) {
         }
 
         if (!found) {
-            cout << "\t\t\a\nRecord with Department Code: " << searchCode << " does not exist!!!\n\n";
+            cout << "\t\t\a\n [❌ Record with Department Code: " << searchCode << " does not exist!!! ]\n\n";
         }
 
     } catch (exception &e) {
@@ -242,14 +286,11 @@ void Department::viewRecord(int searchCode) {
     }
 }
 
-// View all records
+// Function: View all records
 void Department::viewAllRecords() {
-    string deptFileName = "department.txt";
-    string ratesFileName = "rates.txt";
-
     try {
-        ifstream deptFile(deptFileName);
-        ifstream ratesFile(ratesFileName);
+        ifstream deptFile(DEPT_FILE_NAME);
+        ifstream ratesFile(RATES_FILE_NAME);
         checkFileAccess(deptFile);
         checkFileAccess(ratesFile);
 
@@ -259,6 +300,7 @@ void Department::viewAllRecords() {
         float hrRate, otRate;
         int recordsCounter = 0;
 
+        displayHeader();
         while (deptFile >> deptCode) {
             deptFile.ignore(); // skip tab
             getline(deptFile, deptName);
@@ -275,7 +317,7 @@ void Department::viewAllRecords() {
         }
 
         if (recordsCounter == 0) {
-            cout << "\t\t\a\nNo Department records exist!!!\n\n";
+            cout << "\t\t\a\n [❌ No Department records exist!!! ]\n\n";
         }
 
     } catch (exception &e) {
@@ -283,18 +325,13 @@ void Department::viewAllRecords() {
     }
 }
 
-// Delete record
+// Function: Delete record
 void Department::deleteRecord(int deleteCode) {
-    string deptFileName = "department.txt";
-    string tempDeptFileName = "tempdept.txt";
-    string ratesFileName = "rates.txt";
-    string tempRatesFileName = "temprates.txt";
-
     try {
-        ifstream deptFile(deptFileName);
-        ifstream ratesFile(ratesFileName);
-        ofstream tempDeptFile(tempDeptFileName);
-        ofstream tempRatesFile(tempRatesFileName);
+        ifstream deptFile(DEPT_FILE_NAME);
+        ifstream ratesFile(RATES_FILE_NAME);
+        ofstream tempDeptFile(TEMP_DEPT_FILE_NAME);
+        ofstream tempRatesFile(TEMP_RATES_FILE_NAME);
 
         checkFileAccess(deptFile);
         checkFileAccess(ratesFile);
@@ -307,7 +344,7 @@ void Department::deleteRecord(int deleteCode) {
         string deptName;
         float hrRate, otRate;
 
-        cout << "\nAttempting to delete record with Department Code: " << deleteCode << endl;
+        cout << "\n [❌ Attempting to delete record with Department Code: " << deleteCode << " ]" << endl;
 
         while (deptFile >> deptCode) {
             deptFile.ignore(); // skip tab
@@ -324,32 +361,28 @@ void Department::deleteRecord(int deleteCode) {
                 cout << "\n+--------------------------------------------------+" << endl;
                 cout << "|           DEPARTMENT RECORD FOUND                |" << endl;
                 cout << "+--------------------------------------------------+" << endl;
-                cout << "Department Code: " << dept.getCode() << " | "
-                     << "Department Name: " << dept.getName() << " | "
-                     << "Hourly Rate: " << dept.getHourlyRate() << " | "
-                     << "Overtime Rate: " << dept.getOvertimeRate() << endl;
+                dept.display();
+                cout << "\n+--------------------------------------------------+" << endl;
 
-                cout << "Are you sure you want to delete this record? (y/n): ";
+                cout << "❗ Are you sure you want to delete this record? (y/n): ";
                 char confirm;
                 cin >> confirm;
                 if (confirm == 'y' || confirm == 'Y') {
-                    cout << "\nDeleting record..." << endl;
+                    cout << "\n❌ Deleting record..." << endl;
                     // Do not write this record to temp files (effectively deleting)
                 } else {
-                    cout << "\nDeletion cancelled. Record will be kept." << endl;
-                    tempDeptFile << dept.getCode() << "\t" << dept.getName() << endl;
-                    tempRatesFile << dept.getCode() << "\t" << dept.getHourlyRate() << "\t" << dept.getOvertimeRate() << endl;
+                    cout << "\n❌ Deletion cancelled. Record will be kept." << endl;
+                    writeRecord(tempDeptFile, tempRatesFile, dept);
                 }
             } else {
-                tempDeptFile << dept.getCode() << "\t" << dept.getName() << endl;
-                tempRatesFile << dept.getCode() << "\t" << dept.getHourlyRate() << "\t" << dept.getOvertimeRate() << endl;
+                writeRecord(tempDeptFile, tempRatesFile, dept);
             }
         }
 
         if (!found) {
-            cout << "\t\t\a\nRecord with Department Code: " << deleteCode << " does not exist!!!\n\n";
+            cout << "\t\t\a\n [❌ Record with Department Code: " << deleteCode << " does not exist!!! ]\n\n";
         } else {
-            cout << "\nRecord with Department Code: " << deleteCode << " has been deleted (if confirmed)." << endl << endl;
+            cout << "\n [✅ Record with Department Code: " << deleteCode << " has been deleted (if confirmed). ]" << endl << endl;
         }
 
         // Clean up
@@ -358,10 +391,10 @@ void Department::deleteRecord(int deleteCode) {
         tempDeptFile.close();
         tempRatesFile.close();
 
-        remove(deptFileName.c_str());
-        rename(tempDeptFileName.c_str(), deptFileName.c_str());
-        remove(ratesFileName.c_str());
-        rename(tempRatesFileName.c_str(), ratesFileName.c_str());
+        remove(DEPT_FILE_NAME.c_str());
+        rename(TEMP_DEPT_FILE_NAME.c_str(), DEPT_FILE_NAME.c_str());
+        remove(RATES_FILE_NAME.c_str());
+        rename(TEMP_RATES_FILE_NAME.c_str(), RATES_FILE_NAME.c_str());
 
     } catch (exception &e) {
         cerr << e.what() << endl;
