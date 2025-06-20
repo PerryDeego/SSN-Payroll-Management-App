@@ -13,7 +13,7 @@ public:
     // Destructor
     ~EmpNode();
 
-    // Default constructor
+    // Constructors
     EmpNode();
 
     // Primary constructor

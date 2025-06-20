@@ -11,25 +11,20 @@ private:
 	PayrollNode *next;
 
 public:
-	//destructure constructor
 	~PayrollNode();
 
-	//default constructor
 	PayrollNode();
 
-	//primary constructor
 	PayrollNode(Payroll);
 
 	PayrollNode(const PayrollNode &);
 
 	//--------- mutators ------------//
 	void setNext(PayrollNode *nxt);
-
 	void setData(Payroll);
 
 	//-------- accessors -----------//
 	Payroll getData() const;
-
 	PayrollNode* getNext() const;
 
 	void display() const;

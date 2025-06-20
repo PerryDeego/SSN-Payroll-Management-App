@@ -12,9 +12,9 @@ private:
     EmpNode *head;
 
     // Helper functions for merge sort
-    EmpNode* mergeSort(EmpNode* node, std::function<bool(const Employee&, const Employee&)> compare);
+    EmpNode* mergeSort(EmpNode* node, function<bool(const Employee&, const Employee&)> compare);
     EmpNode* getMiddle(EmpNode* node);
-    EmpNode* merge(EmpNode* left, EmpNode* right, std::function<bool(const Employee&, const Employee&)> compare);
+    EmpNode* merge(EmpNode* left, EmpNode* right, function<bool(const Employee&, const Employee&)> compare);
 
 public:
     EmpList();

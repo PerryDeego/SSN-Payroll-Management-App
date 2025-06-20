@@ -7,12 +7,17 @@
 #include <iostream>
 #include <functional>
 
+using namespace std;
+
 class PayList {
 private:
     PayrollNode* head;
 
 public:
+    // Default constructor
     PayList();
+
+    // Destructor
     ~PayList();
 
     // Delete copy semantics
@@ -31,9 +36,9 @@ public:
     void mergeSortByPosition();
 
 private:
-    PayrollNode* mergeSort(PayrollNode *node, std::function<bool(const Payroll&, const Payroll&)> compare);
     PayrollNode* getMiddle(PayrollNode *node);
-    PayrollNode* merge(PayrollNode *left, PayrollNode *right, std::function<bool(const Payroll&, const Payroll&)> compare);
+    PayrollNode* mergeSort(PayrollNode *node, function<bool(const Payroll&, const Payroll&)> compare);
+    PayrollNode* merge(PayrollNode *left, PayrollNode *right, function<bool(const Payroll&, const Payroll&)> compare);
 };
 
 

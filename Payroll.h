@@ -2,16 +2,35 @@
 #define PAYROLL_H
 
 #include <iostream>
-#include <string> // Include string header for std::string
-
+#include <string>
+#include <fstream>
+#include <iomanip>
+#include <limits>
+#include <stdexcept>
+using namespace std;
 class Payroll
 {
+private:
+    // Member variables
+    int id;
+    string firstName;
+    string lastName;
+    int departmentCode;
+    string position;
+    float hoursWorked;
+    float basicPay;
+    float overtimePay;
+    float grossPay;
+
 public:
-    // Constructors
+
+    // Default constructor
     Payroll();
-    Payroll(int id, const std::string& firstName, const std::string& lastName, 
-            int departmentCode, const std::string& position, 
-            float hoursWorked, float basicPay, 
+
+    // Copy constructor
+    Payroll(int id, const string &firstName, const string &lastName,
+            int departmentCode, const string &position,
+            float hoursWorked, float basicPay,
             float overtimePay, float grossPay);
     Payroll(const Payroll &payroll);
 
@@ -20,10 +39,10 @@ public:
 
     // Mutators
     void setId(int empId);
-    void setFirstName(const std::string& fn);
-    void setLastName(const std::string& ln);
+    void setFirstName(const string &fn);
+    void setLastName(const string &ln);
     void setDepartmentCode(int deptCode);
-    void setPosition(const std::string& post);
+    void setPosition(const string &post);
     void setHoursWorked(float hr);
     void setBasicPay(float bPay);
     void setOvertimePay(float otPay);
@@ -31,10 +50,10 @@ public:
 
     // Accessors
     int getId() const;
-    std::string getFirstName() const;
-    std::string getLastName() const;
+    string getFirstName() const;
+    string getLastName() const;
     int getDepartmentCode() const;
-    std::string getPosition() const;
+    string getPosition() const;
     float getHoursWorked() const;
     float getBasicPay() const;
     float getOvertimePay() const;
@@ -42,18 +61,6 @@ public:
 
     // Display method
     void display() const;
-
-private:
-    // Member variables
-    int id;
-    std::string firstName;
-    std::string lastName;
-    int departmentCode;
-    std::string position;
-    float hoursWorked;
-    float basicPay;
-    float overtimePay;
-    float grossPay;
 };
 
 #endif // PAYROLL_H

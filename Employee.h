@@ -3,15 +3,20 @@
 #define EMPLOYEE_H
 
 #include <iostream>
-#include <string> // Include string header for std::string
+#include <iomanip>
+#include <limits>
+#include <fstream>
+#include <string>
+
+using namespace std;
 
 class Employee {
 private:
     int id;
-    std::string firstName;
-    std::string lastName;
+    string firstName;
+    string lastName;
     int departmentCode;
-    std::string position;
+    string position;
     float hoursWorked;
 
 public:
@@ -22,41 +27,43 @@ public:
     Employee();
 
     // Primary constructor
-    Employee(int id, const std::string& firstName, const std::string& lastName, 
-             int departmentCode, const std::string& position, float hoursWorked);
+    Employee(int id, const string& firstName, const string& lastName, 
+             int departmentCode, const string& position, float hoursWorked);
 
     // Copy constructor
     Employee(const Employee &Emp);
 
     // Mutators
     void setId(int empId);
-    void setFirstName(const std::string& fn);
-    void setLastName(const std::string& ln);
+    void setFirstName(const string& fn);
+    void setLastName(const string& ln);
     void setDepartmentCode(int deptCode);
-    void setPosition(const std::string& post);
+    void setPosition(const string& post);
     void setHoursWorked(float hr);
 
     // Accessors
     int getId() const;
-    std::string getFirstName() const;
-    std::string getLastName() const;
+    string getFirstName() const;
+    string getLastName() const;
     int getDepartmentCode() const;
-    std::string getPosition() const;
+    string getPosition() const;
     float getHoursWorked() const;
 
     //--------- Methods -----------//
+    void displayHeader() const;
     void display() const;
-    std::string getValidatedString(const std::string& prompt);
-    float getValidatedFloat(const std::string& prompt);
-    int getValidatedInt(const std::string& prompt);
+    string getValidatedString(const string& prompt);
+    float getValidatedFloat(const string& prompt);
+    int getValidatedInt(const string& prompt);
 
-    void writeRecord(std::ofstream& empFile, std::ofstream& empPayrollFile, const Employee& emp);
+    void writeRecord(ofstream& empFile, ofstream& empPayrollFile, const Employee& emp);
     Employee createEmployee(int empId);
-    bool checkFileAccess(std::ios& file);
+    bool checkFileAccess(ifstream& file, const string& filename);
+    bool checkFileAccess(ofstream& file, const string& filename);
     void addRecord(const Employee& emp);
     void updateRecord(int empId);
     void viewRecord(int empId);
-    void viewAllRecord();
+    void viewAllRecords();
     void deleteRecord(int empId);
 	
 };

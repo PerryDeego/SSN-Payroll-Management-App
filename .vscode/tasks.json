@@ -2,14 +2,14 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Driver.cpp",
+            "label": "Build PayApp.cpp",
             "type": "shell",
             "command": "g++",
             "args": [
     "-std=c++11",
     "-o",
-    "Driver",
-    "Driver.cpp",
+    "PayApp",
+    "PayApp.cpp",
     "Employee.cpp",
     "Department.cpp",
     "EmpNode.cpp",
@@ -23,17 +23,17 @@
                 "isDefault": true
             },
             "problemMatcher": ["$gcc"],
-            "detail": "Builds the Driver.cpp and dependencies"
+            "detail": "Builds the PayApp.cpp and dependencies"
         },
         {
-            "label": "Run Driver",
+            "label": "Run PayApp",
             "type": "shell",
-            "command": "${workspaceFolder}/Driver",
+            "command": "${workspaceFolder}/PayApp",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
-            "dependsOn": "Build Driver.cpp",
+            "dependsOn": "Build PayApp.cpp",
             "presentation": {
                 "reveal": "always"
             }

@@ -1,6 +1,5 @@
 #include "Employee.h"
 #include "EmpNode.h"
-#include <iostream>
 
 // Destructor
 EmpNode::~EmpNode() {}

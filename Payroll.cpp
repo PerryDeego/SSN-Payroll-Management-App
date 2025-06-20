@@ -1,11 +1,4 @@
 #include "Payroll.h"
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <iomanip>
-#include <limits>
-
-using namespace std;
 
 // Destructor
 Payroll::~Payroll() {}
@@ -17,7 +10,7 @@ Payroll::Payroll()
       hoursWorked(0.0f), basicPay(0.0f), 
       overtimePay(0.0f), grossPay(0.0f) {}
 
-// Primary constructor
+// Default constructor
 Payroll::Payroll(int id, const string& firstName, const string& lastName, 
                  int departmentCode, const string& position, 
                  float hoursWorked, float basicPay, 
@@ -57,33 +50,21 @@ float Payroll::getBasicPay() const { return basicPay; }
 float Payroll::getOvertimePay() const { return overtimePay; }
 float Payroll::getGrossPay() const { return grossPay; }
 
+
+// Display class values
 void Payroll::display() const
 {
-  // Define column widths
-  const int width_id = 10;
-  const int width_first = 20;
-  const int width_last = 20;
-  const int width_dept = 15;
-  const int width_pos = 20;
-  const int width_hours = 12;
-  const int width_basic = 12;
-  const int width_ot = 14;
-  const int width_gross = 13;
+    cout << setfill(' '); // Reset fill to spaces
 
-  
-  const int total_width = 1 + width_id + 2 + width_first + 2 + width_last + 2 + width_dept + 2 +
-               width_pos + 2 + width_hours + 2 + width_basic + 2 + width_ot + 2 + width_gross + 2 + 1;
-
-  cout << "\t" << setfill('-') << setw(total_width) << "-" << setfill(' ') << endl;
-  cout << "\t" << "| " << left << setw(width_id) << getId()
-     << "| " << left << setw(width_first) << getFirstName()
-     << "| " << left << setw(width_last) << getLastName()
-     << "| " << left << setw(width_dept) << getDepartmentCode()
-     << "| " << left << setw(width_pos) << getPosition()
-     << "| " << right << setw(width_hours) << fixed << setprecision(2) << getHoursWorked()
-     << "| " << right << setw(width_basic) << fixed << setprecision(2) << getBasicPay()
-     << "| " << right << setw(width_ot) << fixed << setprecision(2) << getOvertimePay()
-     << "| " << right << setw(width_gross) << fixed << setprecision(2) << getGrossPay()
-     << " |" << endl;
-    cout << "\t" << setfill('-') << setw(total_width) << "-" << setfill(' ') << endl;
-}
+    cout << "\t" << " ║ "
+         << right << setw(10) << getId() << " ║ "
+         << left << setw(21) << getFirstName().substr(0, 21) << "║ "
+         << left << setw(21) << getLastName().substr(0, 21) << "║ "
+         << right << setw(14) << getDepartmentCode() << " ║ "
+         << left << setw(23) << getPosition().substr(0, 23) << "║ "
+         << right << setw(10) << fixed << setprecision(2) << getHoursWorked() << " ║ "
+         << right << setw(10) << fixed << setprecision(2) << getBasicPay() << " ║ "
+         << right << setw(14) << fixed << setprecision(2) << getOvertimePay() << " ║ "
+         << right << setw(13) << fixed << setprecision(2) << getGrossPay() << " ║" << endl;
+  cout << "\t" << " ╠════════════╬══════════════════════╬══════════════════════╬════════════════╬════════════════════════╬════════════╬════════════╬════════════════╬═══════════════╣" << endl;
+} 

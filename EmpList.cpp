@@ -1,10 +1,9 @@
 #include "Employee.h"
 #include "EmpNode.h"
 #include "EmpList.h"
-#include <iostream>
-#include <functional>
 
 using namespace std;
+
 
 EmpList::EmpList() {
     head = nullptr;
@@ -12,10 +11,12 @@ EmpList::EmpList() {
 
 EmpList::~EmpList() {
     EmpNode* current = head;
+
+    // Traverse the list and delete each node
     while (current != nullptr) {
         EmpNode* nextNode = current->getNext();
-        delete current; // Free the current node
-        current = nextNode; // Move to the next node
+        delete current; 
+        current = nextNode; 
     }
 }
 
@@ -25,6 +26,8 @@ bool EmpList::isEmpty() {
 
 bool EmpList::isFull() {
     EmpNode *temp = new EmpNode();
+    
+    // Check if memory allocation was successful
     if (temp != nullptr) {
         delete temp;
         return false;
@@ -33,22 +36,34 @@ bool EmpList::isFull() {
 }
 
 void EmpList::insertAtFront(Employee empData) {
+
+    // Check if the list is full before inserting
+    // If the list is not full, create a new node and insert it at the front
     if (!isFull()) {
         EmpNode *newNode = new EmpNode(empData);
+
+        // Check if memory allocation was successful
         if (newNode != nullptr) {
             newNode->setNext(head);
             head = newNode;
         } else {
-            cout << "[❌ Error allocating memory for node! ]" << endl << endl;
+            cout << "\n\t\t[ ❌ Error allocating memory for node! ]" << endl << endl;
         }
     } else {
-        cout << "[ℹ️ List already full! ]" << endl << endl;
+        cout << "\n\t\t[ ℹ️ List already full! ]" << endl << endl;
     }
 }
 
 int EmpList::countNodes() {
     int count = 0;
     EmpNode *temp = head;
+
+    // Traverse the list and count the nodes
+    if (isEmpty()) {
+        return count; // Return 0 if the list is empty
+    }
+
+    // If the list is not empty, traverse through each node
     while (temp != nullptr) {
         ++count;
         temp = temp->getNext();
@@ -57,16 +72,21 @@ int EmpList::countNodes() {
 }
 
 void EmpList::traverse() {
+
+    // Check if the list is empty before traversing
     if (!isEmpty()) {
         EmpNode *temp = head;
         
+        temp->getData().displayHeader();
+
+        // Traverse the list and display each employee's data
         while (temp != nullptr) {
             temp->display();
             temp = temp->getNext();
             cout << endl;
         }
     } else {
-        cout << "[ℹ️ List is empty, no records to display! ]" << endl;
+        cout << "\n\t\t[ ℹ️ List is empty, no records to display! ]" << endl;
     }
 }
 
@@ -106,7 +126,9 @@ void EmpList::mergeSortByHoursWorked() {
 }
 
 // Helper function to perform merge sort
-EmpNode* EmpList::mergeSort(EmpNode* node, std::function<bool(const Employee&, const Employee&)> compare) {
+EmpNode* EmpList::mergeSort(EmpNode* node, function<bool(const Employee&, const Employee&)> compare) {
+
+    // Base case: if the list is empty or has only one node, return it
     if (!node || !node->getNext())
         return node;
 
@@ -122,23 +144,31 @@ EmpNode* EmpList::mergeSort(EmpNode* node, std::function<bool(const Employee&, c
 
 // Function to get the middle node of the list
 EmpNode* EmpList::getMiddle(EmpNode* node) {
+
+    // If the list is empty or has only one node, return it
     if (!node) return node;
 
-    EmpNode* slow = node;
-    EmpNode* fast = node->getNext();
+    EmpNode* first = node;
+    EmpNode* second = node->getNext();
 
-    while (fast && fast->getNext()) {
-        slow = slow->getNext();
-        fast = fast->getNext()->getNext();
+    // Use the slow and fast pointer technique to find the middle node
+    // 'first' moves one step at a time, 'second' moves two steps at a time
+    while (second && second->getNext()) {
+        first = first->getNext();
+        second = second->getNext()->getNext();
     }
-    return slow;
+    return first;
 }
 
 // Function to merge two sorted lists
-EmpNode* EmpList::merge(EmpNode* left, EmpNode* right, std::function<bool(const Employee&, const Employee&)> compare) {
+EmpNode* EmpList::merge(EmpNode* left, EmpNode* right, function<bool(const Employee&, const Employee&)> compare) {
+
+    // If either list is empty, return the other list
     if (!left) return right;
+    // If the right list is empty, return the left list
     if (!right) return left;
 
+    // Compare the data of the two nodes and merge accordingly
     if (compare(left->getData(), right->getData())) {
         left->setNext(merge(left->getNext(), right, compare));
         return left;

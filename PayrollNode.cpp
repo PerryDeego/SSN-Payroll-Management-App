@@ -1,31 +1,29 @@
 #include "Payroll.h"
 #include "PayrollNode.h"
-#include <iostream> 
 
-
-//destructure constructor
+// Destructor
 PayrollNode::~PayrollNode() {}
 
-//default constructor
+//Default Constructor
 PayrollNode::PayrollNode() :data()
 {
 	next = nullptr;
 }
 
-//primary constructor
+// Primary Constructor
 PayrollNode::PayrollNode(Payroll nodeData)
 	:data(nodeData)
 {
-	//this->data = nodeData;
 	next = nullptr;
 }
 
-//copy constructor
+// Copy constructor
 PayrollNode::PayrollNode(const PayrollNode &nd)
 	:data(nd.getData())
 {
 	next = nd.next;
 }
+
 
 void PayrollNode::setNext(PayrollNode *nxt)
 {
