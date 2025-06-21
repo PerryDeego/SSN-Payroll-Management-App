@@ -49,7 +49,7 @@ public:
     void addRecord(const Department& dept);
     void updateRecord(int updateCode);
     void viewRecord(int searchCode);
-    void viewAllRecordss();
+    void viewAllRecords();
     void deleteRecord(int deleteCode);
 };
 

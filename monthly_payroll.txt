@@ -1,3 +1,4 @@
-101	Pam	Mellay	1001	Develpoer	36	2880	0	2880
-201	John	Jones	2001	Accountant	73	4000	4950	8950
-301	Vanjay	Young	3001	Digital	38	2280	0	2280
+101	Pam	Mellay	1001		Develpoer	36	2880	0	2880
+201	John	Jones	2001		Accountant	73	4000	4950	8950
+301	Vanjay	Young	3001		Digital Marketer	38	2280	0	2280
+401	Andre	Anderson	4001		Sale Rep	74	1600	2040	3640

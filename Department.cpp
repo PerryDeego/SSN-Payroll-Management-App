@@ -70,6 +70,7 @@ Department Department::createDepartment(int deptcode) {
     float hourlyRate = 0.0f, overtimeRate = 0.0f;
 
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << endl;
     cout << "➡️\t Enter Department name: ";
     getline(cin, name);
     cout << endl;
@@ -313,7 +314,7 @@ void Department::viewRecord(int searchCode) {
 }
 
 // Function: View all records
-void Department::viewAllRecordss() {
+void Department::viewAllRecords() {
     try {
         ifstream deptFile(DEPT_FILE_NAME);
         ifstream ratesFile(RATES_FILE_NAME);
@@ -399,6 +400,7 @@ void Department::deleteRecord(int deleteCode) {
                 cout << "\t║                           DEPARTMENT RECORD FOUND                                ║" << endl;
                 cout << "\t╠════════════════════════════════════════════════════════════════════════════════════╣" << endl;
                 Department dept(deptCode, deptName, hrRate, otRate);
+                displayHeader();
                 dept.display();
                 cout << "\n\t╚════════════════════════════════════════════════════════════════════════════════════╝" << endl;
 

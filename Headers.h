@@ -1,5 +1,6 @@
 //........Preprocessor Directives........||					                                  
 #include <string> 
+#include <sstream>
 #include <iostream> 
 #include <iomanip>  // For setw, left, right
 #include <unistd.h> // for usleep

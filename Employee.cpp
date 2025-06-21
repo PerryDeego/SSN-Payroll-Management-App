@@ -71,7 +71,7 @@ void Employee::display() const {
          << "║ " << left << setw(29) << getFirstName().substr(0, 29)
          << "║ " << left << setw(29) << getLastName().substr(0, 29)
          << "║ " << left << setw(15) << getDepartmentCode()
-         << "║ " << left << setw(29) << getPosition().substr(0, 29)
+         << "║ " << left << setw(25) << getPosition().substr(0, 25)
          << "║ " << right << setw(14) << fixed << setprecision(2) << getHoursWorked()
          << " ║" << endl;
     cout << "\t" << " ╚════════════════╩══════════════════════════════╩══════════════════════════════╩════════════════╩══════════════════════════════╩════════════════╝";
@@ -126,6 +126,9 @@ float Employee::getValidatedFloat(const string& prompt) {
 
 // Create employee with input validation
 Employee Employee::createEmployee(int empId) {
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << endl;
     string firstName = getValidatedString("➡️\t Enter Employee first name: ");
     cout << endl;
     string lastName = getValidatedString("➡️\t Enter Employee last name: ");
@@ -289,14 +292,15 @@ void Employee::updateRecord(int updateId) {
                 cout << "╚══════════════════════════════════════════════════════════════════════════════╝" << endl;
                 emp.displayHeader();
                 emp.display();
-                cout << "\n ▶️  Press Enter to continue...";
+
+                cout << "\n\n\n ▶️  Press Enter to continue...";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cin.get();
 
                 cout << "\n";
                 cout << "╔══════════════════════════════════════════════════════════════════════════════╗" << endl;
                 cout << "║                      UPDATE EMPLOYEE INFORMATION                           ║" << endl;
-                cout << "╚══════════════════════════════════════════════════════════════════════════════╝" << endl;
+                cout << "╚══════════════════════════════════════════════════════════════════════════════╝" << endl << endl;
 
                 Employee updateEmp = createEmployee(updateId);
                 empTempFile << updateEmp.getId() << "\t" << updateEmp.getFirstName() << "\t" 
@@ -374,7 +378,7 @@ void Employee::viewRecord(int searchId) {
 
         // Close the files after reading
         if (!found) {
-            cout << "\n\t [ ℹ️ Record with Employee Id : " << searchId << " does not exist! ]\n\n";
+            cout << "\n\t [ ℹ️\t Record with Employee Id : " << searchId << " does not exist! ]\n\n";
         }
 
         // Close the files
@@ -459,8 +463,13 @@ void Employee::deleteRecord(int deleteId) {
         float hrs;
 
         // Read records from both employee and payroll files
-        while (empFile >> id >> firstName >> lastName >> deptCode >> position &&
-               empPayrollFile >> id >> deptCode >> hrs) {
+        while (empFile >> id >> firstName >> lastName >> deptCode) {
+          
+            empFile.ignore(); // Ignore the newline character after deptCode
+            getline(empFile, position); // Read the entire line for position
+
+            empPayrollFile >> id >> deptCode >> hrs;
+
             emp.setId(id);
             emp.setFirstName(firstName);
             emp.setLastName(lastName);

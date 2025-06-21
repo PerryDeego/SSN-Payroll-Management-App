@@ -19,15 +19,15 @@
       "request": "launch",
       "command": "make",
       "args": [],
-      "cwd": "/Users/perry/Desktop/Software-Solutions-Now"
+      "cwd": "/Users/perry/Desktop/Smart-Solutions-Now"
     },
     {
       "name": "C/C++ Runner: Debug Session",
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/perry/Desktop/Software-Solutions-Now",
-      "program": "/Users/perry/Desktop/Software-Solutions-Now/build/Debug/outDebug"
+      "cwd": "/Users/perry/Desktop/Smart-Solutions-Now",
+      "program": "/Users/perry/Desktop/Smart-Solutions-Now/build/Debug/outDebug"
     }
   ]
 }
