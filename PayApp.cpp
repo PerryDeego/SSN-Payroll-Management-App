@@ -393,7 +393,7 @@ void sortEmployeeConsole(const string &empFileName, const string &empPayrollFile
 
         case 5: // Sort by Hours Worked
             displayHeader("EMPLOYEES SORTED BY HOURS WORKED");
-            emplist->mergeSortByHoursWorked(); // Use merge sort instead of bubble sort
+            emplist->mergeSortByHoursWorked(); 
             emplist->traverse();
             break;
 
@@ -424,7 +424,7 @@ void payrollProcessing(const string &ratesFileName, const string &empFileName, c
 		ifstream ratesFile(ratesFileName);
 		ifstream empFile(empFileName);
 		ifstream empPayrollFile(empPayrollFileName);
-		ofstream payrollFile(payrollFileName); // overwrite file for each run
+		ofstream payrollFile(payrollFileName); 
 
 		checkFileAccess(ratesFile);
 		checkFileAccess(empFile);
@@ -433,7 +433,14 @@ void payrollProcessing(const string &ratesFileName, const string &empFileName, c
 
 		int code;
 		float hrRate, otRate;
-		map<int, pair<float, float>> deptRates; // Map to hold department rates: deptCode -> (hourlyRate, overtimeRate)
+        // Now process payroll records
+		int payrollId, payrollDeptCode;
+		float hrsWorked;
+        const int baseHrs = 40; // Base hours for regular pay calculation
+
+		bool recordsFound = false; // Flag to check if any records were processed
+
+		map<int, pair<float, float>> deptRates; 
 
 		// Read department rates
 		while (ratesFile >> code >> hrRate >> otRate)
@@ -448,8 +455,7 @@ void payrollProcessing(const string &ratesFileName, const string &empFileName, c
 
 		while (empFile >> id >> firstName >> lastName >> deptCodeEmp)
 		{
-			// Read the full line for position
-			getline(empFile, position); // Read the rest of the line for position
+			getline(empFile, position);
 			
 			Employee emp;
 			emp.setId(id);
@@ -460,17 +466,11 @@ void payrollProcessing(const string &ratesFileName, const string &empFileName, c
 			employees[id] = emp;
 		}
 
-		const int baseHrs = 40; // Base hours for regular pay calculation
-
+	
 		payrollLogo(); // Display payroll logo
 
-		// Now process payroll records
-		int payrollId, payrollDeptCode;
-		float hrsWorked;
-
-		bool recordsFound = false; // Flag to check if any records were processed
-
-		while (empPayrollFile >> payrollId >> payrollDeptCode >> hrsWorked) // Read payroll records
+		
+		while (empPayrollFile >> payrollId >> payrollDeptCode >> hrsWorked)
 		{
 			// Find employee by payrollId
 			auto empIt = employees.find(payrollId);
@@ -503,21 +503,21 @@ void payrollProcessing(const string &ratesFileName, const string &empFileName, c
 			float deptHourlyRate = rateIt->second.first;
 			float deptOvertimeRate = rateIt->second.second;
 
-			if (hrsWorked <= 0) // Check if hours worked is zero or negative
+			if (hrsWorked <= 0) 
 			{
-				continue; // Skip if hours worked is zero or negative
+				continue; 
 			}
 
 			// Calculate pays
 			float regularPay = 0.0f;
 			float overtimePay = 0.0f;
 
-			if (hrsWorked > baseHrs) // If hours worked exceeds base hours, calculate regular and overtime pay
+			if (hrsWorked > baseHrs) 
 			{
 				regularPay = calculateRegularPay(deptHourlyRate, baseHrs);
 				overtimePay = calculateOvertimePay(hrsWorked, deptOvertimeRate);
 			}
-			else // If hours worked is within base hours, calculate only regular pay
+			else 
 			{
 				regularPay = calculateRegularPay(deptHourlyRate, hrsWorked);
 			}
@@ -616,8 +616,8 @@ void sortPayrollConsole(const string &payrollFileName)
 {
     clearScreen();
     int choice;
-    int existingNodes = 0; // Count of existing nodes
-    PayList *payrollList = new PayList(); // Create a new instance of PayList
+    int existingNodes = 0;
+    PayList *payrollList = new PayList(); 
 
     try
     {

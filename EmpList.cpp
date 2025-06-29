@@ -152,7 +152,6 @@ EmpNode* EmpList::getMiddle(EmpNode* node) {
     EmpNode* second = node->getNext();
 
     // Use the slow and fast pointer technique to find the middle node
-    // 'first' moves one step at a time, 'second' moves two steps at a time
     while (second && second->getNext()) {
         first = first->getNext();
         second = second->getNext()->getNext();

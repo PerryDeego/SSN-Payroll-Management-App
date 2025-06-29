@@ -1,4 +1,2 @@
-101	Pam	Mellay	1001	Develpoer
-201	John	Jones	2001	Accountant
-301	Vanjay	Young	3001	Digital Marketer
-401	Andre	Anderson	4001	Sale Rep
+201	John	Jones	2001	Manager
+301	Grant	Bilien	3001	Data Analyst

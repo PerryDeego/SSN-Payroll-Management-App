@@ -166,13 +166,11 @@ PayrollNode* PayList::merge(PayrollNode *left, PayrollNode *right, function<bool
     // Compare the data of the current nodes of both lists
     if (compare(left->getData(), right->getData())) {
         // If the left node's data is less than the right node's data,
-        // set the next of the left node to the result of merging the rest of the left list with the right list
         left->setNext(merge(left->getNext(), right, compare));
 
         return left; 
     } else {
         // If the right node's data is less than or equal to the left node's data,
-        // set the next of the right node to the result of merging the left list with the rest of the right list
         right->setNext(merge(left, right->getNext(), compare));
         return right;
     }

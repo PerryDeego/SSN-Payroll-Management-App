@@ -293,7 +293,7 @@ void Employee::updateRecord(int updateId) {
                 emp.displayHeader();
                 emp.display();
 
-                cout << "\n\n\n ▶️  Press Enter to continue...";
+                cout << "\n\n\t ▶️  Press Enter to continue...";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cin.get();
 

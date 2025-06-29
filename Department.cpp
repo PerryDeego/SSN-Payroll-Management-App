@@ -218,7 +218,7 @@ void Department::updateRecord(int updateCode) {
 
                 bool duplicateFound = false; // Flag to check for duplicates
 
-                // Check for duplicate department code or name
+                // Check if the current department code is different and the name matches an existing record
                 for (const auto& record : existingRecords) {
                     if (deptToUpdate.getCode() != record.first && deptToUpdate.getName() == record.second) {
                         cout << "\n\t [ ❌ Duplicate Department Name: " << deptToUpdate.getName() << " already exists! ]\n\n";
@@ -227,7 +227,7 @@ void Department::updateRecord(int updateCode) {
                     }
                 }
 
-                // If no duplicate found, write the updated record
+                // If a duplicate was found, write the original record to the temporary files
                 if (duplicateFound) {
                     writeRecord(tempDeptFile, tempRatesFile, Department(deptCode, deptName, hrRate, otRate));
                 } else {
@@ -335,7 +335,6 @@ void Department::viewAllRecords() {
             deptFile.ignore(); // skip tab
             getline(deptFile, deptName);
 
-            // Read rates
             // If reading rates fails, break the loop
             if (!(ratesFile >> deptRateCode >> hrRate >> otRate)) break;
 
@@ -388,7 +387,6 @@ void Department::deleteRecord(int deleteCode) {
             deptFile.ignore(); // skip tab
             getline(deptFile, deptName);
 
-            // Read rates
             // If reading rates fails, break the loop
             if (!(ratesFile >> deptRateCode >> hrRate >> otRate)) break;
 
